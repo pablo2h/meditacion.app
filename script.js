@@ -39,7 +39,16 @@ startButton.addEventListener('click', () => {
         const track = audioContext.createMediaElementSource(audioElement);
         track.connect(audioContext.destination);
     }
+    // Elemento de control de volumen
+    const volumeControl = document.getElementById('volume');
 
+    // Configurar el volumen inicial
+    audioElement.volume = volumeControl.value;
+
+    // Actualizar el volumen cuando se cambia el control
+    volumeControl.addEventListener('input', () => {
+    audioElement.volume = volumeControl.value;
+    });
     // Ocultar configuración y mostrar controles
     startButton.classList.add('hidden'); // Esconde el botón después de iniciar
     configSection.classList.add('hidden');

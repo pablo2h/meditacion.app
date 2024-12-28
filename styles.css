@@ -115,3 +115,13 @@ input, select {
     background-color: #E6B450;
     cursor: not-allowed;
 }
+#volume-control {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#volume-control input[type="range"] {
+    width: 100px;
+}
