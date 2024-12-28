@@ -1,0 +1,9 @@
+Meditaciones/
+├── index.html         # Archivo principal
+├── styles.css         # Estilos
+├── script.js          # JavaScript
+└── assets/
+    └── music/         # Carpeta con las canciones .mp3
+        ├── mindfulness.mp3
+        ├── relajacion.mp3
+        └── visualizacion.mp3

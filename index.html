@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditaciones</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Meditaciones</h1>
+        <p>Tu espacio para la calma y el bienestar</p>
+    </header>
+    <main>
+        <!-- Menú de configuración -->
+        <section id="config-section">
+            <h2>Configura tu meditación</h2>
+            <label for="duration">Duración (minutos):</label>
+            <input type="range" id="duration" min="1" max="60" value="15">
+            <span id="duration-display">15 minutos</span>
+
+            <label for="style">Estilo de meditación:</label>
+            <select id="music-style">
+                <option value="mindfulness.mp3">Mindfulness</option>
+                <option value="relajacion.mp3">Relajación Profunda</option>
+                <option value="visualizacion.mp3">Visualización Guiada</option>
+            </select>
+        </section>
+
+        <!-- Temporizador -->
+        <div id="progress-container">
+            <div id="progress-circle">
+                <span id="timer">15 minutos</span>
+            </div>
+        </div>
+
+        <!-- Botón inicial de Start -->
+        <div id="start-container">
+            <button id="start-button">▶ Iniciar Meditación</button>
+        </div>
+
+        <!-- Controles de música ocultos al inicio -->
+        <div id="music-controls" class="hidden">
+            <button id="toggle-play">▶ Reproducir</button>
+            <button id="stop-music">■ Detener</button>
+        </div>
+    </main>
+    <footer>
+        <p>© 2024 - @hornodebarro Meditaciones</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
