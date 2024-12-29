@@ -1,16 +1,49 @@
+/* Modo claro */
+:root {
+    --bg-color: #fffbe7; /* Fondo principal */
+    --header-bg: #d9bc7f; /* Fondo del header */
+    --section-bg: #ffffff; /* Fondo de las secciones */
+    --text-color: #5b5b5b; /* Color del texto */
+    --button-bg: #e1ad53; /* Fondo de los botones */
+    --button-text: #ffffff; /* Texto de los botones */
+    --accent-color: #ffbe76; /* Color de acento */
+    --progress-circle-bg-start: rgb(255, 200, 90); /* Color inicial */
+    --progress-circle-bg-end: rgb(255, 251, 234); /* Color final */
+}
+
+/* Modo oscuro */
+:root.dark-mode {
+    --bg-color: #2d1e40; /* Fondo principal */
+    --header-bg: #3a2a5c; /* Fondo del header */
+    --section-bg: #35224f; /* Fondo de las secciones */
+    --text-color: #e0d7f5; /* Color del texto */
+    --button-bg: #6d3a96; /* Fondo de los botones */
+    --button-text: #ffffff; /* Texto de los botones */
+    --accent-color: #662f92; /* Color de acento */
+    --progress-circle-bg-start: rgb(128, 90, 180); /* Color inicial */
+    --progress-circle-bg-end: rgb(70, 50, 100);    /* Color final */
+}
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #FFF9E6; /* Pastel amarillo */
-    color: #5C4033; /* Marrón suave */
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
     text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+}
 
 header {
-    background-color: #F4E3C3; /* Dorado claro */
+    background-color: var(--header-bg);
+    color: var(--button-text);
     padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
@@ -25,11 +58,12 @@ main {
 }
 
 section {
-    background-color: #FFFFFF; /* Blanco puro */
+    background-color: var(--section-bg); /* Blanco puro */
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 15px;
     margin-bottom: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 label {
@@ -60,7 +94,7 @@ input, select {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: conic-gradient(#FFFBEA 0%, #FFC85A 0%);
+    background: var(--progress-circle-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -80,17 +114,18 @@ input, select {
 }
 
 #start-button {
-    background-color: #FFC85A;
-    color: #5C4033;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     font-size: 1.5em;
     padding: 15px 30px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #start-button:hover {
-    background-color: #E6B450;
+    background-color: var(--accent-color);
 }
 
 /* Controles de música */
@@ -102,8 +137,8 @@ input, select {
 }
 
 #music-controls button {
-    background-color: #FFC85A;
-    color: #5C4033;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
@@ -112,7 +147,7 @@ input, select {
 }
 
 #music-controls button:disabled {
-    background-color: #E6B450;
+    background-color: var(--button-bg);
     cursor: not-allowed;
 }
 #volume-control {
@@ -124,4 +159,56 @@ input, select {
 
 #volume-control input[type="range"] {
     width: 100px;
+}
+#mode-switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px; /* Ajustar espacio entre el switch y el texto */
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--accent-color);
+    border-radius: 34px;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: var(--button-bg);
+}
+
+input:checked + .slider:before {
+    transform: translateX(14px);
 }

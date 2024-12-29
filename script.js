@@ -12,6 +12,40 @@ const musicControls = document.getElementById('music-controls');
 const durationInput = document.getElementById('duration');
 const timerDisplay = document.getElementById('timer');
 const styleSelect = document.getElementById('music-style');
+const modeSwitch = document.getElementById('mode-switch');
+const modeLabel = document.getElementById('mode-label');
+const body = document.body;
+const html = document.documentElement; // Cambiar clase en <html> para afectar todo
+function getCSSVariable(variableName) {
+    return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+}
+const progresscolorbg = getCSSVariable('--progress-circle-bg');
+
+// Verificar preferencia guardada del modo noche o claro
+const savedMode = localStorage.getItem('theme');
+if (savedMode === 'dark') {
+    body.classList.add('dark-mode');
+    html.classList.add('dark-mode');
+    modeSwitch.checked = true;
+    modeLabel.textContent = "Modo Noche";
+} else {
+    modeLabel.textContent = "Modo Claro"; // Ajustar texto al modo predeterminado
+}
+
+// Alternar modos
+modeSwitch.addEventListener('change', () => {
+    if (modeSwitch.checked) {
+        body.classList.add('dark-mode');
+        html.classList.add('dark-mode');
+        modeLabel.textContent = "Modo Noche"; // Cambiar texto
+        localStorage.setItem('theme', 'dark'); // Guardar preferencia
+    } else {
+        body.classList.remove('dark-mode');
+        html.classList.remove('dark-mode');
+        modeLabel.textContent = "Modo Claro"; // Cambiar texto
+        localStorage.setItem('theme', 'light'); // Guardar preferencia
+    }
+});
 
 // Ocultar los botones de control al inicio
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,12 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     progressContainer.classList.add('hidden'); // Oculta el círculo progresivo también
 });
 
-// Actualizar la duración tanto en el círculo como en el texto de configuración
-durationInput.addEventListener('input', () => {
-    const durationValue = durationInput.value;
-    timerDisplay.textContent = `${durationValue} minutos`; // Actualiza el círculo
-    document.getElementById('duration-display').textContent = `${durationValue} minutos`; // Actualiza el texto en configuración
-});
+
 
 // Iniciar meditación
 startButton.addEventListener('click', () => {
@@ -62,6 +91,12 @@ startButton.addEventListener('click', () => {
     togglePlayButton.textContent = "⏸ Pausar";
 });
 
+// Actualizar la duración tanto en el círculo como en el texto de configuración
+durationInput.addEventListener('input', () => {
+    const durationValue = durationInput.value;
+    timerDisplay.textContent = `${durationValue} minutos`; // Actualiza el círculo
+    document.getElementById('duration-display').textContent = `${durationValue} minutos`; // Actualiza el texto en configuración
+});
 // Temporizador con actualización del círculo progresivo
 function startTimer(duration) {
     let remainingTime = duration;
@@ -69,8 +104,10 @@ function startTimer(duration) {
 
     const updateCircle = () => {
         const percentage = ((totalDuration - remainingTime) / totalDuration) * 100;
+        const circleColorStart = getCSSVariable('--progress-circle-bg-start'); // Variable CSS para el color inicial
+        const circleColorEnd = getCSSVariable('--progress-circle-bg-end');   // Variable CSS para el color final
         document.getElementById('progress-circle').style.background = `
-            conic-gradient(#FFC85A ${percentage}%, #FFFBEA ${percentage}%)
+            conic-gradient(${circleColorStart} ${percentage}%,${circleColorEnd}  ${percentage}%)
         `;
     };
 
