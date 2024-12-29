@@ -1,8 +1,11 @@
 let audioContext;
 let audioElement;
 let timerInterval;
+let isAudioStarted = false; // Para asegurarse de que solo se active una vez
+let introAudio = new Audio('assets/music/intro.mp3'); // Canción inicial
 
 // Elementos del DOM
+const volumeControl = document.getElementById('volume');
 const startButton = document.getElementById('start-button');
 const togglePlayButton = document.getElementById('toggle-play');
 const stopButton = document.getElementById('stop-music');
@@ -32,6 +35,11 @@ if (savedMode === 'dark') {
     modeLabel.textContent = "Modo Claro"; // Ajustar texto al modo predeterminado
 }
 
+// Ocultar los botones de control al inicio
+document.addEventListener('DOMContentLoaded', () => {
+    musicControls.classList.add('hidden'); // Asegura que estén ocultos
+    progressContainer.classList.add('hidden'); // Oculta el círculo progresivo también
+});
 // Alternar modos
 modeSwitch.addEventListener('change', () => {
     if (modeSwitch.checked) {
@@ -47,19 +55,69 @@ modeSwitch.addEventListener('change', () => {
     }
 });
 
-// Ocultar los botones de control al inicio
-document.addEventListener('DOMContentLoaded', () => {
-    musicControls.classList.add('hidden'); // Asegura que estén ocultos
-    progressContainer.classList.add('hidden'); // Oculta el círculo progresivo también
-});
+// Configurar evento inicial para la interacción del usuario
+window.addEventListener('click', playIntroAudio, { once: true }); // Solo una vez
+window.addEventListener('keydown', playIntroAudio, { once: true }); // Alternativa para teclados
 
 
+
+// Función genérica para Fade-In
+function fadeIn(audio, duration = 2000) {
+    let currentVolume = 0;
+    audio.volume = 0; // Inicia con volumen 0
+    audio.play();
+    const step = 1 / (duration / 100); // Incremento de volumen
+  
+    const fadeInterval = setInterval(() => {
+      if (currentVolume < 1) {
+        currentVolume += step;
+        audio.volume = Math.min(currentVolume, 1); // Limitar al máximo volumen
+      } else {
+        clearInterval(fadeInterval);
+      }
+    }, 100); // Actualizar cada 100ms
+  }
+
+  // Función genérica para Fade-Out
+function fadeOut(audio, duration = 2000, onComplete = () => {}) {
+    let currentVolume = audio.volume;
+    const step = currentVolume / (duration / 100); // Decremento de volumen
+  
+    const fadeInterval = setInterval(() => {
+      if (currentVolume > 0) {
+        currentVolume -= step;
+        audio.volume = Math.max(currentVolume, 0); // Limitar al mínimo volumen
+      } else {
+        clearInterval(fadeInterval);
+        audio.pause(); // Pausar audio una vez que el volumen sea 0
+        audio.currentTime = 0; // Reiniciar el tiempo
+        onComplete();
+      }
+    }, 100); // Actualizar cada 100ms
+  }
+
+
+// Configuración de la canción inicial
+function playIntroAudio() {
+    if (!isAudioStarted) {
+        introAudio.loop = true; // Repetir en loop
+        fadeIn(introAudio); // Aplicar fade-in
+        isAudioStarted = true; // Marcar que ya se activó
+        };
+    }
+
+function stopIntroAudio() {
+    fadeOut(introAudio);
+  }
 
 // Iniciar meditación
 startButton.addEventListener('click', () => {
     const selectedStyle = styleSelect.value;
     const duration = parseInt(durationInput.value, 10) * 60;
 
+    // Detener la canción inicial
+    stopIntroAudio();
+    
     // Configuración inicial de audio
     if (!audioContext) {
         audioContext = new AudioContext();
@@ -69,7 +127,8 @@ startButton.addEventListener('click', () => {
         track.connect(audioContext.destination);
     }
     // Elemento de control de volumen
-    const volumeControl = document.getElementById('volume');
+    audioElement.volume = 0;
+    fadeIn(audioElement); // Aplicar fade-in a la canción de meditación
 
     // Configurar el volumen inicial
     audioElement.volume = volumeControl.value;
@@ -78,12 +137,13 @@ startButton.addEventListener('click', () => {
     volumeControl.addEventListener('input', () => {
     audioElement.volume = volumeControl.value;
     });
+
+
     // Ocultar configuración y mostrar controles
     startButton.classList.add('hidden'); // Esconde el botón después de iniciar
     configSection.classList.add('hidden');
-    // Mostrar los controles y el círculo progresivo
-     musicControls.classList.remove('hidden');
-     progressContainer.classList.remove('hidden');
+    musicControls.classList.remove('hidden');
+    progressContainer.classList.remove('hidden');
 
     // Iniciar música y temporizador
     audioElement.play();
@@ -139,7 +199,9 @@ togglePlayButton.addEventListener('click', () => {
 
 // Detener meditación
 stopButton.addEventListener('click', () => {
-    stopMeditation();
+    fadeOut(audioElement, 2000, () => {
+        stopMeditation();
+    });
 });
 
 function stopMeditation() {
