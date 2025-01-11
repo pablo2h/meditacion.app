@@ -135,10 +135,11 @@ startButton.addEventListener('click', () => {
 
     // Actualizar el volumen cuando se cambia el control
     volumeControl.addEventListener('input', () => {
-    audioElement.volume = volumeControl.value;
+        if (audioElement) {
+            audioElement.volume = volumeControl.value;
+        }
     });
-
-
+    
     // Ocultar configuración y mostrar controles
     startButton.classList.add('hidden'); // Esconde el botón después de iniciar
     configSection.classList.add('hidden');
