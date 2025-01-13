@@ -119,6 +119,9 @@ class AudioManager {
         this.intervalTimer = null;
         this.sessionDuration = 0;
         this.currentAudio = null;
+        this.backgroundMusic = null;
+        this.isPaused = false;
+        this.narratorEnabled = false;
     }
 
     async loadAudioTags() {
@@ -155,24 +158,55 @@ class AudioManager {
     }
 
     async startSession(style, duration) {
-        this.currentStyle = style;
-        this.sessionDuration = duration;
+        try {
+            this.currentStyle = style;
+            this.sessionDuration = duration;
+            this.narratorEnabled = document.getElementById('narrator-toggle').checked;
 
-        // Reproducir audio de inicio
-        await this.playAudioByTag('start', style);
+            // Iniciar música de fondo
+            this.backgroundMusic = new Audio(`assets/music/${style}.mp3`);
+            this.backgroundMusic.loop = true;
+            
+            // Configurar volumen inicial
+            const volume = document.getElementById('volume').value;
+            this.backgroundMusic.volume = volume;
 
-        // Configurar intervalos
-        const intervalMinutes = 10;
-        this.intervalTimer = setInterval(() => {
-            this.playAudioByTag('interval', style);
-        }, intervalMinutes * 60 * 1000);
+            await this.backgroundMusic.play();
 
-        // Configurar audio final
-        setTimeout(async () => {
-            clearInterval(this.intervalTimer);
-            await this.playAudioByTag('end', style);
-            this.endSession();
-        }, duration * 1000);
+            if (this.narratorEnabled) {
+                // Reproducir audio de inicio si el narrador está activado
+                await this.playAudioByTag('start', style);
+
+                // Configurar intervalos
+                const intervalMinutes = 10;
+                this.intervalTimer = setInterval(() => {
+                    this.playAudioByTag('interval', style);
+                }, intervalMinutes * 60 * 1000);
+
+                // Configurar audio final
+                setTimeout(async () => {
+                    clearInterval(this.intervalTimer);
+                    await this.playAudioByTag('end', style);
+                    this.endSession();
+                }, duration * 1000);
+            }
+        } catch (error) {
+            console.error('Error iniciando sesión:', error);
+            throw error;
+        }
+    }
+
+    togglePause() {
+        if (this.backgroundMusic) {
+            if (this.isPaused) {
+                this.backgroundMusic.play();
+                if (this.currentAudio) this.currentAudio.play();
+            } else {
+                this.backgroundMusic.pause();
+                if (this.currentAudio) this.currentAudio.pause();
+            }
+            this.isPaused = !this.isPaused;
+        }
     }
 
     endSession() {
@@ -182,6 +216,9 @@ class AudioManager {
         if (this.currentAudio) {
             fadeOut(this.currentAudio);
         }
+        if (this.backgroundMusic) {
+            fadeOut(this.backgroundMusic);
+        }
     }
 }
 
@@ -190,29 +227,36 @@ const audioManager = new AudioManager();
 
 // Modificar el evento de inicio de meditación
 startButton.addEventListener('click', async () => {
-    const selectedStyle = styleSelect.value.split('.')[0]; // Obtener estilo sin extensión
+    const selectedStyle = styleSelect.value.split('.')[0];
     const duration = parseInt(durationSlider.value, 10) * 60;
 
     // Detener la canción inicial
     stopIntroAudio();
     
-    // Cargar configuración de audio si no está cargada
-    if (!audioManager.audioTags) {
-        await audioManager.loadAudioTags();
+    try {
+        // Cargar configuración de audio si no está cargada
+        if (!audioManager.audioTags) {
+            await audioManager.loadAudioTags();
+        }
+
+        // Ocultar configuración
+        document.querySelector('#config-container').classList.add('hidden');
+        document.querySelector('#start-button').classList.add('hidden');
+        
+        // Mostrar controles de música y progreso
+        document.querySelector('#music-controls').classList.remove('hidden');
+        document.querySelector('#progress-container').classList.remove('hidden');
+
+        // Iniciar sesión con el sistema de etiquetas
+        await audioManager.startSession(selectedStyle, duration);
+
+        // Iniciar temporizador
+        startTimer(duration);
+        togglePlayButton.textContent = "⏸ Pausar";
+    } catch (error) {
+        console.error('Error al iniciar la sesión:', error);
+        alert('Hubo un error al iniciar la meditación. Por favor, intenta de nuevo.');
     }
-
-    // Iniciar sesión con el sistema de etiquetas
-    audioManager.startSession(selectedStyle, duration);
-    
-    // Ocultar configuración y mostrar controles
-    startButton.classList.add('hidden');
-    configSection.classList.add('hidden');
-    musicControls.classList.remove('hidden');
-    progressContainer.classList.remove('hidden');
-
-    // Iniciar temporizador
-    startTimer(duration);
-    togglePlayButton.textContent = "⏸ Pausar";
 });
 
 // Actualizar la duración tanto en el círculo como en el texto de configuración
@@ -252,24 +296,43 @@ function startTimer(duration) {
 
 // Alternar entre reproducir y pausar
 togglePlayButton.addEventListener('click', () => {
-    if (audioElement.paused) {
-        audioElement.play();
-        togglePlayButton.textContent = "⏸ Pausar";
-    } else {
-        audioElement.pause();
-        togglePlayButton.textContent = "▶ Reproducir";
+    if (audioManager.backgroundMusic) {
+        audioManager.togglePause();
+        togglePlayButton.textContent = audioManager.isPaused ? "▶ Reproducir" : "⏸ Pausar";
     }
 });
 
 // Detener meditación
 stopButton.addEventListener('click', () => {
-    fadeOut(audioElement, 2000, () => {
-        stopMeditation();
-    });
+    audioManager.endSession();
+    stopMeditation();
 });
 
 function stopMeditation() {
     clearInterval(timerInterval);
     audioManager.endSession();
-    location.reload();
+    
+    // Ocultar controles y progreso
+    document.querySelector('#music-controls').classList.add('hidden');
+    document.querySelector('#progress-container').classList.add('hidden');
+    
+    // Mostrar configuración
+    document.querySelector('#config-container').classList.remove('hidden');
+    document.querySelector('#start-button').classList.remove('hidden');
+    
+    // Recargar la página después de un breve delay para asegurar que los fade-outs se completen
+    setTimeout(() => {
+        location.reload();
+    }, 2000);
 }
+
+// Agregar control de volumen
+volumeControl.addEventListener('input', () => {
+    const volume = volumeControl.value;
+    if (audioManager.backgroundMusic) {
+        audioManager.backgroundMusic.volume = volume;
+    }
+    if (audioManager.currentAudio) {
+        audioManager.currentAudio.volume = volume;
+    }
+});
