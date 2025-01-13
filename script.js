@@ -9,10 +9,11 @@ const volumeControl = document.getElementById('volume');
 const startButton = document.getElementById('start-button');
 const togglePlayButton = document.getElementById('toggle-play');
 const stopButton = document.getElementById('stop-music');
-const configSection = document.getElementById('config-section');
+const configSection = document.getElementById('config-container');
 const progressContainer = document.getElementById('progress-container');
 const musicControls = document.getElementById('music-controls');
-const durationInput = document.getElementById('duration');
+const durationSlider = document.getElementById('duration-slider');
+const durationDisplay = document.getElementById('duration-display');
 const timerDisplay = document.getElementById('timer');
 const styleSelect = document.getElementById('music-style');
 const modeSwitch = document.getElementById('mode-switch');
@@ -110,53 +111,115 @@ function stopIntroAudio() {
     fadeOut(introAudio);
   }
 
-// Iniciar meditación
-startButton.addEventListener('click', () => {
-    const selectedStyle = styleSelect.value;
-    const duration = parseInt(durationInput.value, 10) * 60;
+// Sistema de gestión de audios
+class AudioManager {
+    constructor() {
+        this.audioTags = null;
+        this.currentStyle = null;
+        this.intervalTimer = null;
+        this.sessionDuration = 0;
+        this.currentAudio = null;
+    }
+
+    async loadAudioTags() {
+        try {
+            const response = await fetch('config/audioTags.json');
+            this.audioTags = await response.json();
+        } catch (error) {
+            console.error('Error cargando configuración de audio:', error);
+        }
+    }
+
+    getAudioByTag(type, style) {
+        if (!this.audioTags || !this.audioTags[type]) return null;
+        return this.audioTags[type].find(audio => audio.tags.includes(style));
+    }
+
+    async playAudioByTag(type, style) {
+        const audioConfig = this.getAudioByTag(type, style);
+        if (!audioConfig) return;
+
+        if (this.currentAudio) {
+            await fadeOut(this.currentAudio);
+        }
+
+        const audio = new Audio(`audio-library/${type}/${audioConfig.file}`);
+        this.currentAudio = audio;
+        await fadeIn(audio);
+        
+        return new Promise(resolve => {
+            audio.onended = () => {
+                resolve();
+            };
+        });
+    }
+
+    async startSession(style, duration) {
+        this.currentStyle = style;
+        this.sessionDuration = duration;
+
+        // Reproducir audio de inicio
+        await this.playAudioByTag('start', style);
+
+        // Configurar intervalos
+        const intervalMinutes = 10;
+        this.intervalTimer = setInterval(() => {
+            this.playAudioByTag('interval', style);
+        }, intervalMinutes * 60 * 1000);
+
+        // Configurar audio final
+        setTimeout(async () => {
+            clearInterval(this.intervalTimer);
+            await this.playAudioByTag('end', style);
+            this.endSession();
+        }, duration * 1000);
+    }
+
+    endSession() {
+        if (this.intervalTimer) {
+            clearInterval(this.intervalTimer);
+        }
+        if (this.currentAudio) {
+            fadeOut(this.currentAudio);
+        }
+    }
+}
+
+// Inicializar el gestor de audio
+const audioManager = new AudioManager();
+
+// Modificar el evento de inicio de meditación
+startButton.addEventListener('click', async () => {
+    const selectedStyle = styleSelect.value.split('.')[0]; // Obtener estilo sin extensión
+    const duration = parseInt(durationSlider.value, 10) * 60;
 
     // Detener la canción inicial
     stopIntroAudio();
     
-    // Configuración inicial de audio
-    if (!audioContext) {
-        audioContext = new AudioContext();
-        audioElement = new Audio(`assets/music/${selectedStyle}`);
-        audioElement.loop = true;
-        const track = audioContext.createMediaElementSource(audioElement);
-        track.connect(audioContext.destination);
+    // Cargar configuración de audio si no está cargada
+    if (!audioManager.audioTags) {
+        await audioManager.loadAudioTags();
     }
-    // Elemento de control de volumen
-    audioElement.volume = 0;
-    fadeIn(audioElement); // Aplicar fade-in a la canción de meditación
 
-    // Configurar el volumen inicial
-    audioElement.volume = volumeControl.value;
-
-    // Actualizar el volumen cuando se cambia el control
-    volumeControl.addEventListener('input', () => {
-        if (audioElement) {
-            audioElement.volume = volumeControl.value;
-        }
-    });
+    // Iniciar sesión con el sistema de etiquetas
+    audioManager.startSession(selectedStyle, duration);
     
     // Ocultar configuración y mostrar controles
-    startButton.classList.add('hidden'); // Esconde el botón después de iniciar
+    startButton.classList.add('hidden');
     configSection.classList.add('hidden');
     musicControls.classList.remove('hidden');
     progressContainer.classList.remove('hidden');
 
-    // Iniciar música y temporizador
-    audioElement.play();
+    // Iniciar temporizador
     startTimer(duration);
     togglePlayButton.textContent = "⏸ Pausar";
 });
 
 // Actualizar la duración tanto en el círculo como en el texto de configuración
-durationInput.addEventListener('input', () => {
-    const durationValue = durationInput.value;
-    timerDisplay.textContent = `${durationValue} minutos`; // Actualiza el círculo
-    document.getElementById('duration-display').textContent = `${durationValue} minutos`; // Actualiza el texto en configuración
+durationSlider.addEventListener('input', () => {
+    const durationValue = durationSlider.value;
+    timerDisplay.textContent = `${durationValue} minutos`;// Actualiza el círculo
+    durationDisplay.textContent = `${durationValue} minutos`;// Actualiza el texto en configuración
 });
 // Temporizador con actualización del círculo progresivo
 function startTimer(duration) {
@@ -207,7 +270,6 @@ stopButton.addEventListener('click', () => {
 
 function stopMeditation() {
     clearInterval(timerInterval);
-    audioElement.pause();
-    audioElement.currentTime = 0;
-    location.reload(); // Reinicia la página
+    audioManager.endSession();
+    location.reload();
 }

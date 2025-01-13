@@ -1,0 +1,21 @@
+    // Configuración inicial de audio
+    if (!audioContext) {
+        audioContext = new AudioContext();
+        audioElement = new Audio(`assets/music/${selectedStyle}`);
+        audioElement.loop = true;
+        const track = audioContext.createMediaElementSource(audioElement);
+        track.connect(audioContext.destination);
+    }
+    // Elemento de control de volumen
+    audioElement.volume = 0;
+    fadeIn(audioElement); // Aplicar fade-in a la canción de meditación
+
+    // Configurar el volumen inicial
+    audioElement.volume = volumeControl.value;
+
+    // Actualizar el volumen cuando se cambia el control
+    volumeControl.addEventListener('input', () => {
+        if (audioElement) {
+            audioElement.volume = volumeControl.value;
+        }
+    });

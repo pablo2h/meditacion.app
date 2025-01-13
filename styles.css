@@ -63,6 +63,7 @@ main {
     margin: 20px auto;
     width: 90%;
     max-width: 600px;
+    padding: 0 15px;
 }
 
 section {
@@ -103,13 +104,9 @@ input, select {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    background-color: var(--bg-color);
-    border-radius: 10px;
-    padding: 10px;
-    margin: 20px auto;
-    width: 90%;
+    width: 100%;
     max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
 }
 
 /* Secciones de configuración */
@@ -117,7 +114,11 @@ input, select {
     background-color: var(--section-bg);
     border: 1px solid var(--button-bg);
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     font-size: 1.2em;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -175,44 +176,91 @@ input, select {
     background-color: var(--accent-color);
 }
 
-/* Controles de música */
-#music-controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+/* Estilos generales para sliders y sus contenedores */
+.slider-container {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 0 auto;
 }
 
-#music-controls button {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1.1em;
+.custom-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--button-bg);
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.custom-slider:hover {
+    opacity: 1;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
     cursor: pointer;
 }
 
-#music-controls button:disabled {
-    background-color: var(--button-bg);
-    cursor: not-allowed;
-}
-#volume-control {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.custom-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: none;
 }
 
-#volume-control input[type="range"] {
-    width: 100px;
-}
-#mode-switch-container {
+/* Estilos para los controles de música */
+#music-controls {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
-    gap: 10px; /* Ajustar espacio entre el switch y el texto */
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+#volume-control {
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+/* Estilos del switch de modo noche */
+#mode-switch-container {
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--section-bg);
+    border-radius: 20px;
 }
 
 .switch {
@@ -258,4 +306,94 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(14px);
+}
+
+/* Media queries */
+@media (min-width: 768px) {
+    #music-controls {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .buttons-container {
+        flex: 0 0 auto;
+    }
+
+    #volume-control {
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 767px) {
+    .buttons-container {
+        flex-direction: row;
+        width: 100%;
+    }
+
+    #music-controls button {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    #volume-control {
+        width: 90%;
+    }
+}
+
+/* Media queries para diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    .config-section {
+        padding: 10px;
+    }
+
+    #progress-circle {
+        width: 120px;
+        height: 120px;
+    }
+
+    #timer {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    header p {
+        font-size: 0.9em;
+    }
+
+    .config-section h2 {
+        font-size: 1.3em;
+    }
+
+    #start-button {
+        font-size: 1.2em;
+        padding: 12px 24px;
+    }
+
+    #music-controls button {
+        font-size: 1em;
+        padding: 8px 16px;
+    }
+}
+
+/* Ajustes para el círculo de progreso en móviles */
+@media (max-width: 360px) {
+    #progress-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    #timer {
+        font-size: 1rem;
+    }
 }

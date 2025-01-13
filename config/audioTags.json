@@ -1,0 +1,53 @@
+{
+  "start": [
+    {
+      "file": "intro_mindfulness.mp3",
+      "tags": ["mindfulness"],
+      "duration": 30
+    },
+    {
+      "file": "intro_relajacion.mp3",
+      "tags": ["relajacion"],
+      "duration": 30
+    },
+    {
+      "file": "intro_visualizacion.mp3",
+      "tags": ["visualizacion"],
+      "duration": 30
+    }
+  ],
+  "interval": [
+    {
+      "file": "interval_mindfulness.mp3",
+      "tags": ["mindfulness"],
+      "duration": 15
+    },
+    {
+      "file": "interval_relajacion.mp3",
+      "tags": ["relajacion"],
+      "duration": 15
+    },
+    {
+      "file": "interval_visualizacion.mp3",
+      "tags": ["visualizacion"],
+      "duration": 15
+    }
+  ],
+  "end": [
+    {
+      "file": "end_mindfulness.mp3",
+      "tags": ["mindfulness"],
+      "duration": 30
+    },
+    {
+      "file": "end_relajacion.mp3",
+      "tags": ["relajacion"],
+      "duration": 30
+    },
+    {
+      "file": "end_visualizacion.mp3",
+      "tags": ["visualizacion"],
+      "duration": 30
+    }
+  ]
+} 
