@@ -61,7 +61,7 @@ h1 {
 
 /* Contenedor principal */
 main {
-    width: 100%;
+    width: auto;
     max-width: 600px;
     margin: 0 auto;
     padding: 15px;
@@ -70,26 +70,27 @@ main {
     align-items: center;
 }
 
-/* Contenedor base para todas las secciones */
+/* Base container común */
 .base-container {
-    width: 100%;
+    width: 90%;
     max-width: 500px;
     margin: 10px auto;
-    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-/* Contenedor de configuración */
-#config-container {
-    composes: base-container;
     gap: 15px;
 }
 
-/* Secciones individuales de configuración */
+/* Contenedor de configuración */
+#setup-container {
+    composes: base-container;
+}
+#setup-container.hidden {
+    display: none !important;
+}
+/* Secciones de configuración */
 .config-section {
-    width: 100%;
+    width: 90%;
     background-color: var(--section-bg);
     border: 1px solid var(--button-bg);
     border-radius: 8px;
@@ -106,45 +107,81 @@ main {
     margin-bottom: 10px;
 }
 
-/* Contenedor de progreso y controles */
-#progress-container,
-#music-controls {
-    composes: base-container;
-    background-color: var(--section-bg);
-    border: 1px solid var(--button-bg);
-    border-radius: 8px;
-    padding: 20px;
-}
-
-/* Controles de música */
-#music-controls {
+/* Contenedor de sesión de meditación */
+#meditation-session {
+    width: 90%;
+    max-width: 500px;
+    margin: 10px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    background-color: var(--section-bg);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+#meditation-session.hidden {
+    display: none !important;
+}
+
+/* Círculo de progreso */
+#progress-container {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+#progress-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: conic-gradient(var(--progress-circle-bg-start) 0%, var(--progress-circle-bg-end) 0%);
+}
+
+#timer {
+    font-size: 1.5em;
+    color: var(--text-color);
+}
+
+/* Controles de música */
+#music-controls {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
 }
 
 .buttons-container {
-    width: 100%;
+    width: 90%;
     display: flex;
+    gap: 10px;
     justify-content: center;
-    gap: 15px;
 }
 
 #volume-control {
-    width: 100%;
+    width: 90%;
     max-width: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
-/* Ajustes específicos para el narrador */
+#volume-control label {
+    margin-bottom: 5px;
+}
+
+/* Narrador */
 #narrator-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 90%;
 }
 
 #narrator-section label {
@@ -159,7 +196,7 @@ main {
 
 /* Estilos generales para sliders y sus contenedores */
 .slider-container {
-    width: 100%;
+    width: 90%;
     max-width: 300px;
     padding: 10px;
     margin: 0 auto;
@@ -198,9 +235,9 @@ main {
     border: none;
 }
 
-/* Estilos del switch de modo noche */
+/* Switch de modo noche */
 #mode-switch-container {
-    width: 100%;
+    width: 90%;
     max-width: 200px;
     margin: 20px auto;
     padding: 10px;
@@ -259,19 +296,13 @@ input:checked + .slider:before {
 
 /* Media queries */
 @media (max-width: 480px) {
-    main {
-        padding: 10px;
-    }
-
-    .config-section,
-    #progress-container,
-    #music-controls {
-        padding: 15px;
+    #progress-circle {
+        width: 150px;
+        height: 150px;
     }
 
     .buttons-container {
         flex-direction: column;
-        width: 100%;
     }
 
     .buttons-container button {
@@ -280,16 +311,13 @@ input:checked + .slider:before {
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
+    #progress-circle {
+        width: 180px;
+        height: 180px;
+    }
+
     .buttons-container {
         flex-direction: row;
-    }
-
-    .buttons-container button {
-        flex: 1;
-    }
-
-    #volume-control {
-        width: 90%;
     }
 }
 
@@ -298,7 +326,6 @@ input:checked + .slider:before {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 30px;
     }
 
     .buttons-container {
@@ -308,53 +335,6 @@ input:checked + .slider:before {
 
     #volume-control {
         flex: 0 0 200px;
+        margin: 0;
     }
-}
-
-/* Contenedor de configuración inicial */
-#setup-container {
-    width: 100%;
-    max-width: 500px;
-    margin: 10px auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
-
-/* Contenedor de sesión de meditación */
-#meditation-session {
-    width: 100%;
-    max-width: 500px;
-    margin: 10px auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    background-color: var(--section-bg);
-    border-radius: 8px;
-    padding: 20px;
-}
-
-#meditation-session.hidden {
-    display: none !important;
-}
-
-#progress-container,
-#music-controls {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Asegurarnos que los contenedores internos tengan el ancho correcto */
-#meditation-session #progress-container,
-#meditation-session #music-controls {
-    width: 100%;
-}
-
-/* Clase para ocultar elementos */
-.hidden {
-    display: none !important;
 }
