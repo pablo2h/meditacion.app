@@ -1,3 +1,9 @@
+    
+
+// Iniciar meditación
+startButton.addEventListener('click', () => {
+        const selectedStyle = styleSelect.value;}
+
     // Configuración inicial de audio
     if (!audioContext) {
         audioContext = new AudioContext();
@@ -19,3 +25,20 @@
             audioElement.volume = volumeControl.value;
         }
     });
+
+    // Iniciar música y temporizador
+    audioElement.play();
+
+    //frenar meditacion
+function stopMeditation() {
+
+    clearInterval(timerInterval);
+    audioElement.pause();
+    audioElement.currentTime = 0;
+    location.reload(); // Reinicia la página
+
+    audioManager.endSession();
+
+    location.reload();
+
+}
