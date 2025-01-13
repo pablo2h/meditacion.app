@@ -36,11 +36,7 @@ if (savedMode === 'dark') {
     modeLabel.textContent = "Modo Claro"; // Ajustar texto al modo predeterminado
 }
 
-// Ocultar los botones de control al inicio
-document.addEventListener('DOMContentLoaded', () => {
-    musicControls.classList.add('hidden'); // Asegura que estén ocultos
-    progressContainer.classList.add('hidden'); // Oculta el círculo progresivo también
-});
+
 // Alternar modos
 modeSwitch.addEventListener('change', () => {
     if (modeSwitch.checked) {
@@ -122,6 +118,7 @@ class AudioManager {
         this.backgroundMusic = null;
         this.isPaused = false;
         this.narratorEnabled = false;
+        this.timerInterval = null;
     }
 
     async loadAudioTags() {
@@ -201,9 +198,18 @@ class AudioManager {
             if (this.isPaused) {
                 this.backgroundMusic.play();
                 if (this.currentAudio) this.currentAudio.play();
+                // Reanudar el temporizador
+                if (this.timerInterval === null) {
+                    startTimer(this.remainingTime);
+                }
             } else {
                 this.backgroundMusic.pause();
                 if (this.currentAudio) this.currentAudio.pause();
+                // Pausar el temporizador
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
             }
             this.isPaused = !this.isPaused;
         }
@@ -239,13 +245,18 @@ startButton.addEventListener('click', async () => {
             await audioManager.loadAudioTags();
         }
 
-        // Ocultar configuración
-        document.querySelector('#config-container').classList.add('hidden');
-        document.querySelector('#start-button').classList.add('hidden');
-        
-        // Mostrar controles de música y progreso
-        document.querySelector('#music-controls').classList.remove('hidden');
-        document.querySelector('#progress-container').classList.remove('hidden');
+        // Verificar que los elementos existen antes de manipularlos
+        const setupContainer = document.getElementById('setup-container');
+        const meditationSession = document.getElementById('meditation-session');
+
+        if (!setupContainer || !meditationSession) {
+            console.error('No se encontraron los contenedores necesarios');
+            return;
+        }
+
+        // Ocultar configuración y mostrar sesión de meditación
+        setupContainer.classList.add('hidden');
+        meditationSession.classList.remove('hidden');
 
         // Iniciar sesión con el sistema de etiquetas
         await audioManager.startSession(selectedStyle, duration);
@@ -269,32 +280,39 @@ durationSlider.addEventListener('input', () => {
 function startTimer(duration) {
     let remainingTime = duration;
     const totalDuration = duration;
+    audioManager.remainingTime = remainingTime; // Guardar el tiempo restante
 
     const updateCircle = () => {
         const percentage = ((totalDuration - remainingTime) / totalDuration) * 100;
-        const circleColorStart = getCSSVariable('--progress-circle-bg-start'); // Variable CSS para el color inicial
-        const circleColorEnd = getCSSVariable('--progress-circle-bg-end');   // Variable CSS para el color final
+        const circleColorStart = getCSSVariable('--progress-circle-bg-start');
+        const circleColorEnd = getCSSVariable('--progress-circle-bg-end');
         document.getElementById('progress-circle').style.background = `
             conic-gradient(${circleColorStart} ${percentage}%,${circleColorEnd}  ${percentage}%)
         `;
     };
 
-    // Actualizar cada segundo
-    timerInterval = setInterval(() => {
-        remainingTime--;
-        const remainingMinutes = Math.ceil(remainingTime / 60);
-        timerDisplay.textContent = `${remainingMinutes} minutos`;
-        updateCircle();
+    // Limpiar intervalo anterior si existe
+    if (audioManager.timerInterval) {
+        clearInterval(audioManager.timerInterval);
+    }
 
-        // Detener cuando el temporizador llegue a 0
-        if (remainingTime <= 0) {
-            clearInterval(timerInterval);
-            stopMeditation();
+    audioManager.timerInterval = setInterval(() => {
+        if (!audioManager.isPaused) {
+            remainingTime--;
+            audioManager.remainingTime = remainingTime;
+            const remainingMinutes = Math.ceil(remainingTime / 60);
+            timerDisplay.textContent = `${remainingMinutes} minutos`;
+            updateCircle();
+
+            if (remainingTime <= 0) {
+                clearInterval(audioManager.timerInterval);
+                stopMeditation();
+            }
         }
     }, 1000);
 }
 
-// Alternar entre reproducir y pausar
+// Actualizar el evento del botón de reproducir/pausar
 togglePlayButton.addEventListener('click', () => {
     if (audioManager.backgroundMusic) {
         audioManager.togglePause();
@@ -312,15 +330,14 @@ function stopMeditation() {
     clearInterval(timerInterval);
     audioManager.endSession();
     
-    // Ocultar controles y progreso
-    document.querySelector('#music-controls').classList.add('hidden');
-    document.querySelector('#progress-container').classList.add('hidden');
+    const setupContainer = document.getElementById('setup-container');
+    const meditationSession = document.getElementById('meditation-session');
+
+    if (setupContainer && meditationSession) {
+        meditationSession.classList.add('hidden');
+        setupContainer.classList.remove('hidden');
+    }
     
-    // Mostrar configuración
-    document.querySelector('#config-container').classList.remove('hidden');
-    document.querySelector('#start-button').classList.remove('hidden');
-    
-    // Recargar la página después de un breve delay para asegurar que los fade-outs se completen
     setTimeout(() => {
         location.reload();
     }, 2000);

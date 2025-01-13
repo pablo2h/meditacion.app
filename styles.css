@@ -59,61 +59,23 @@ h1 {
     margin: 0;
 }
 
+/* Contenedor principal */
 main {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-section {
-    background-color: var(--section-bg); /* Blanco puro */
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    margin-bottom: 20px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-label {
-    font-weight: bold;
-    display: block;
-    margin: 10px 0 5px;
-}
-
-input[type="range"], select, input[type="checkbox"] {
+/* Contenedor base para todas las secciones */
+.base-container {
     width: 100%;
-    margin: 5px 0;
-    padding: 8px;
-    border: 1px solid var(--button-bg);
-    border-radius: 5px;
-}
-
-input, select {
-    margin-bottom: 10px;
-    width: 100%;
-    padding: 5px;
-}
-
-.hidden {
-    display: none !important; /* Asegúrate de que se aplique incluso si hay estilos conflictivos */
-}
-
-/* Estilos base para todos los contenedores (mobile-first) */
-.config-section, 
-#music-controls,
-#progress-container,
-#mode-switch-container {
-    width: 90%;
-    max-width: 400px;
+    max-width: 500px;
     margin: 10px auto;
-    padding: 15px;
-    background-color: var(--section-bg);
-    border: 1px solid var(--button-bg);
-    border-radius: 8px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -121,25 +83,21 @@ input, select {
 
 /* Contenedor de configuración */
 #config-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    composes: base-container;
     gap: 15px;
 }
 
-/* Secciones de configuración */
+/* Secciones individuales de configuración */
 .config-section {
+    width: 100%;
     background-color: var(--section-bg);
     border: 1px solid var(--button-bg);
     border-radius: 8px;
-    padding: 15px 20px;
-    margin-bottom: 15px;
+    padding: 20px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .config-section h2 {
@@ -148,51 +106,55 @@ input, select {
     margin-bottom: 10px;
 }
 
-/* Círculo y temporizador */
-#progress-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px auto;
-}
-
-#progress-circle {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: conic-gradient(var(--progress-circle-bg-start), var(--progress-circle-bg-end));
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-#timer {
-    font-size: 1.5rem;
-    color: var(--text-color);
-    position: absolute;
-}
-
-/* Botón inicial */
-#start-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
-
-#start-button {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    font-size: 1.5em;
-    padding: 15px 30px;
-    border: none;
+/* Contenedor de progreso y controles */
+#progress-container,
+#music-controls {
+    composes: base-container;
+    background-color: var(--section-bg);
+    border: 1px solid var(--button-bg);
     border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 20px;
 }
 
-#start-button:hover {
-    background-color: var(--accent-color);
+/* Controles de música */
+#music-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.buttons-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+#volume-control {
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Ajustes específicos para el narrador */
+#narrator-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#narrator-section label {
+    margin-bottom: 15px;
+}
+
+#narrator-section input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    margin: 0;
 }
 
 /* Estilos generales para sliders y sus contenedores */
@@ -234,44 +196,6 @@ input, select {
     background: var(--accent-color);
     cursor: pointer;
     border: none;
-}
-
-/* Estilos para los controles de música */
-#music-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 15px;
-    background-color: var(--section-bg);
-    border-radius: 8px;
-}
-
-.buttons-container {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    width: 100%;
-    max-width: 400px;
-}
-
-.buttons-container button {
-    flex: 1;
-    max-width: 150px;
-    padding: 10px 20px;
-}
-
-#volume-control {
-    width: 100%;
-    max-width: 300px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
 }
 
 /* Estilos del switch de modo noche */
@@ -334,32 +258,34 @@ input:checked + .slider:before {
 }
 
 /* Media queries */
-@media (min-width: 768px) {
+@media (max-width: 480px) {
+    main {
+        padding: 10px;
+    }
+
+    .config-section,
+    #progress-container,
     #music-controls {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
+        padding: 15px;
     }
 
     .buttons-container {
-        flex: 0 0 auto;
-    }
-
-    #volume-control {
-        flex: 0 0 auto;
-    }
-}
-
-@media (max-width: 767px) {
-    .buttons-container {
-        flex-direction: row;
+        flex-direction: column;
         width: 100%;
     }
 
-    #music-controls button {
+    .buttons-container button {
+        width: 100%;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .buttons-container {
+        flex-direction: row;
+    }
+
+    .buttons-container button {
         flex: 1;
-        min-width: 120px;
     }
 
     #volume-control {
@@ -367,135 +293,68 @@ input:checked + .slider:before {
     }
 }
 
-/* Media queries para diferentes tamaños de pantalla */
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 2em;
-    }
-
-    .config-section {
-        padding: 10px;
-    }
-
-    #progress-circle {
-        width: 120px;
-        height: 120px;
-    }
-
-    #timer {
-        font-size: 1.2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    header h1 {
-        font-size: 1.8em;
-    }
-
-    header p {
-        font-size: 0.9em;
-    }
-
-    .config-section h2 {
-        font-size: 1.3em;
-    }
-
-    #start-button {
-        font-size: 1.2em;
-        padding: 12px 24px;
-    }
-
-    #music-controls button {
-        font-size: 1em;
-        padding: 8px 16px;
-    }
-}
-
-/* Ajustes para el círculo de progreso en móviles */
-@media (max-width: 360px) {
-    #progress-circle {
-        width: 100px;
-        height: 100px;
-    }
-
-    #timer {
-        font-size: 1rem;
-    }
-}
-
-/* Ajustar el estilo del contenedor del narrador */
-#narrator-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-    background-color: var(--section-bg);
-    border: 1px solid var(--button-bg);
-    border-radius: 8px;
-    padding: 15px 20px;
-    margin-bottom: 15px;
-}
-
-#narrator-section h2 {
-    margin-bottom: 15px;
-    width: 100%;
-    text-align: center;
-}
-
-#narrator-section input[type="checkbox"] {
-    width: 24px;
-    height: 24px;
-    margin: 10px auto;
-    cursor: pointer;
-}
-
-#narrator-section label {
-    text-align: center;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-/* Ajustes para los controles de música en móvil */
-@media (max-width: 767px) {
-    #music-controls {
-        padding: 10px;
-        margin: 10px auto;
-    }
-
-    .buttons-container {
-        flex-direction: row;
-        flex-wrap: nowrap;
-    }
-
-    .buttons-container button {
-        font-size: 0.9em;
-        padding: 8px 16px;
-    }
-}
-
-/* Media queries para tablets y desktop */
-@media (min-width: 768px) {
-    .buttons-container {
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .buttons-container button {
-        width: auto;
-        min-width: 120px;
-    }
-
+@media (min-width: 769px) {
     #music-controls {
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
-        padding: 20px;
+        padding: 20px 30px;
+    }
+
+    .buttons-container {
+        flex: 0 0 auto;
+        width: auto;
     }
 
     #volume-control {
-        width: auto;
-        min-width: 200px;
+        flex: 0 0 200px;
     }
+}
+
+/* Contenedor de configuración inicial */
+#setup-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Contenedor de sesión de meditación */
+#meditation-session {
+    width: 100%;
+    max-width: 500px;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--section-bg);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+#meditation-session.hidden {
+    display: none !important;
+}
+
+#progress-container,
+#music-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Asegurarnos que los contenedores internos tengan el ancho correcto */
+#meditation-session #progress-container,
+#meditation-session #music-controls {
+    width: 100%;
+}
+
+/* Clase para ocultar elementos */
+.hidden {
+    display: none !important;
 }
